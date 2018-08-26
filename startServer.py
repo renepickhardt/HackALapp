@@ -26,7 +26,7 @@ class HackALappHTTPServer_RequestHandler(BaseHTTPRequestHandler):
     global rpc_interface
     global topic_dict
     
-    rpc_interface = LightningRpc("/Users/rpickhardt/.lightning/lightning-rpc") 
+    rpc_interface = LightningRpc("/home/rpickhardt/.lightning/lightning-rpc") 
     
     f = open("topics.txt")
     topic_dict= {}
@@ -37,7 +37,7 @@ class HackALappHTTPServer_RequestHandler(BaseHTTPRequestHandler):
     def __footer(self):
         return """<p>Want to learn more about this LAPP?  
         Check out <a href="https://youtu.be/HXVDwRnU7_I">my youtube video about Hack A Lapp</a> <br><br>
-        You can also fund a payment channel with my <a href="https://youtu.be/HXVDwRnU7_I">lightning node</a> or 
+        You can also fund a payment channel with my <a href="http://ln.rene-pickhardt.de">lightning node</a> or 
          or <a href="https://twitter.com/renepickhardt">follow me on twitter</a>
                  or visit my <a href="https://www.rene-pickhardt.de">my personal Website</a></p>"""
         
@@ -123,18 +123,19 @@ class HackALappHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             pass
         
         invoices = rpc_interface.listinvoices()["invoices"]
+        
         for invoice in invoices:
             if invoice["payment_hash"] == payment_hash:
                 if invoice["status"] == "paid":
-                    message +="great you paid your fair share!"
+                    message +="<br>great you paid your fair share!"
                     message +="<h2>The current rankings of the poll are:</h2>"
                     message +="<ul>"
                     for key, count in self.__count_votes():
                         message += "<li>"+str(count)+":"+topic_dict[key]+"</li>"
                     message +="</ul>"
+                    return message
             
-            else:
-                message += self.__add__invoice_payment_string(invoice)
+        message += self.__add__invoice_payment_string(invoice)
                 
         return message
 
